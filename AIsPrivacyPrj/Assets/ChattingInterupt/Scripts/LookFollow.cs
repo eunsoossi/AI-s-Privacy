@@ -6,6 +6,7 @@ public class LookFollow : MonoBehaviour {
 
     public Transform target;
     public Vector3 offset;
+    public Quaternion offsetQ;
     public bool lookOn;
     public float speed;
 
@@ -24,20 +25,23 @@ public class LookFollow : MonoBehaviour {
     {
         if (lookOn)
         {
-            Looking();
+            LookSmoothly();
+        }
+        else
+        {
+            return;
         }
     }
 
 
-    public void Looking()
+    public void LookSmoothly()
     {
-        // head.LookAt(target.position);
-        // head.rotation = head.rotation * Quaternion.Euler(offset);
-        Quaternion lookRotation = Quaternion.LookRotation(target.position - head.position);
-        // Debug.Log(target.position + "dfsdfds" + lookRotation);
-        head.rotation = Quaternion.Lerp(head.rotation, lookRotation, Time.deltaTime * speed);
-        // Debug.Log(head.rotation);
-        // 애니메이션을 켜고 하면 안됨. 왜일까? 애니메이션 켜고 래이트 업데이트로 하면 또 살짝 됨.
-
+        //head.LookAt(target.position);
+        //head.rotation = head.rotation * Quaternion.Euler(offset);
+        Quaternion lookRotation = Quaternion.LookRotation(target.position - head.position, Vector3.up);
+        Quaternion correction = Quaternion.RotateTowards(offsetQ, lookRotation, Time.deltaTime * speed);
+        Debug.Log(correction);
+        head.rotation = head.rotation * correction * Quaternion.Euler(offset);
+        
     }
 }
